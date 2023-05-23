@@ -2,10 +2,15 @@ package com.example.android.unscramble.ui.game
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class GameViewModel : ViewModel() {
-    private var score = 0
-    private var currentWordCount = 0
+    private var _score = 0
+    val score: Int
+        get() = _score
+    private var _currentWordCount = 0
+    val currentWordCount: Int
+        get() = _currentWordCount
     private lateinit var _currentScrambledWord : String
     val currentScrambledWord : String
         get() = _currentScrambledWord
@@ -24,18 +29,38 @@ class GameViewModel : ViewModel() {
         }
         else{
             _currentScrambledWord = String(tempWord)
-            ++currentWordCount
+            ++_currentWordCount
             wordList.add(currentWord)
         }
     }
 
     fun nextWord(): Boolean{
-        return if (currentWordCount < MAX_NO_OF_WORDS){
+        return if (_currentWordCount < MAX_NO_OF_WORDS){
             getNextWord()
             true
         }
         else false
     }
+
+    private fun increaseScore(){
+        _score += SCORE_INCREASE
+    }
+
+    fun isUserWordCorrect(playerWord : String): Boolean{
+        if(playerWord.equals(currentWord, true)){
+            increaseScore()
+            return true
+        }
+        return false
+    }
+
+    fun reinitializeData(){
+        _score = 0
+        _currentWordCount = 0
+        wordList.clear()
+        getNextWord()
+    }
+
 
     init{
         Log.d("GameFragment", "GameViewModel created!")
